@@ -23,8 +23,28 @@ h1, h2, h3, h4, h5, h6, strong {
   font-weight: 500;
 }
 
+a {
+  text-decoration: none;
+}
+
+ul {
+  list-style: none;
+}
+
 button {
   cursor: pointer;
+}
+// remover arrows for input type number
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
 }
 
 `;

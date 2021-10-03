@@ -3,37 +3,62 @@ import { FiMail, FiLock } from 'react-icons/fi';
 import { FormHandles } from '@unform/core';
 import { Form } from '@unform/web';
 import * as Yup from 'yup';
-import { Link } from 'react-router-dom';
+// import { Link } from 'react-router-dom';
 
+import { useAuth } from '../../hooks/auth';
+import { useToast } from '../../hooks/toast';
 import getValidationErrors from '../../utils/getValidationErrors';
 import logo from '../../assets/logo.png';
 import Input from '../../components/Input';
 
 import { Container, Content } from './styles';
 
+interface SignInFormData {
+  email: string;
+  password: string;
+}
+
 const SignIn: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
 
-  const handleSubmit = useCallback(async (data: object) => {
-    try {
-      formRef.current?.setErrors({});
+  const { signIn } = useAuth();
+  const { addToast } = useToast();
 
-      const schema = Yup.object().shape({
-        email: Yup.string()
-          .required('E-mail is mandatory')
-          .email('Use a valid e-mail'),
-        password: Yup.string().required('Password is mandatory'),
-      });
+  const handleSubmit = useCallback(
+    async (data: SignInFormData) => {
+      try {
+        formRef.current?.setErrors({});
 
-      await schema.validate(data, {
-        abortEarly: false,
-      });
-    } catch (err) {
-      const errors = getValidationErrors(err);
+        const schema = Yup.object().shape({
+          email: Yup.string()
+            .required('E-mail is mandatory')
+            .email('Use a valid e-mail'),
+          password: Yup.string().required('Password is mandatory'),
+        });
 
-      formRef.current?.setErrors(errors);
-    }
-  }, []);
+        await schema.validate(data, {
+          abortEarly: false,
+        });
+        await signIn({
+          email: data.email,
+          password: data.password,
+        });
+      } catch (err) {
+        if (err instanceof Yup.ValidationError) {
+          const errors = getValidationErrors(err);
+
+          formRef.current?.setErrors(errors);
+        }
+
+        addToast({
+          type: 'error',
+          title: 'Authentication Error',
+          // description: "username and password combination doesn't match",
+        });
+      }
+    },
+    [signIn, addToast],
+  );
 
   return (
     <Container>
@@ -51,9 +76,9 @@ const SignIn: React.FC = () => {
             placeholder="Password"
           />
 
-          <Link to="/dashboard">
-            <button type="submit">Log In</button>
-          </Link>
+          {/* <Link to="/dashboard"> */}
+          <button type="submit">Log In</button>
+          {/* </Link> */}
 
           <a href="forgot">Forgot my password</a>
         </Form>

@@ -20,6 +20,7 @@ export const Container = styled.div<ContainerProps>`
 
   display: flex;
   align-items: center;
+  /* justify-content: center; */
 
   & + div {
     margin-top: 8px;
@@ -48,6 +49,7 @@ export const Container = styled.div<ContainerProps>`
     flex: 1;
     background: transparent;
     border: 0;
+    width: 100%;
 
     &::placeholder {
       color: ${lighten(0.5, '#666')};
